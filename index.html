@@ -1,528 +1,566 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>MELÓMANO RADIO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
 
-const css = `
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap');
-
-* { margin:0; padding:0; box-sizing:border-box; }
-
-:root {
-  --nc: #00f3ff;
-  --np: #b24bf3;
-  --nm: #ff006e;
-  --ng: #39ff14;
-  --dark: rgba(8,8,18,0.92);
-  --glass: rgba(18,18,38,0.65);
+:root{
+  --nc:#00f3ff;
+  --np:#b24bf3;
+  --nm:#ff006e;
+  --ng:#39ff14;
+  --glass:rgba(18,18,38,0.65);
 }
 
-html, body, #root {
-  width: 100%; height: 100%; overflow: hidden;
-  background: transparent;
-}
-
-body {
-  font-family: 'Rajdhani', sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: transparent;
-}
-
-.shell {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100vw;
-  height: 100dvh;
-  padding: 12px;
-  background: transparent;
-}
-
-/* Phone frame */
-.phone {
-  position: relative;
-  width: min(360px, 100%);
-  height: min(740px, 100dvh - 24px);
-  background: linear-gradient(160deg,#141428,#0a0a18);
-  border-radius: 40px;
-  box-shadow:
-    0 0 0 1.5px rgba(178,75,243,0.5),
-    0 0 0 3px rgba(0,243,255,0.15),
-    0 30px 80px rgba(0,0,0,0.85),
-    0 0 60px rgba(0,243,255,0.12);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Subtle inner shine */
-.phone::before {
-  content:'';
-  position:absolute;
-  inset:0;
-  border-radius:40px;
-  background: linear-gradient(135deg,rgba(255,255,255,0.06) 0%,transparent 55%,rgba(255,255,255,0.02) 100%);
-  pointer-events:none;
-  z-index:5;
-}
-
-/* Dynamic island */
-.island {
-  position:absolute;
-  top:12px; left:50%; transform:translateX(-50%);
-  width:100px; height:28px;
-  background:#000;
-  border-radius:14px;
-  z-index:10;
-  display:flex; align-items:center; justify-content:center;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
-}
-.cam { width:10px; height:10px; border-radius:50%;
-  background:radial-gradient(circle at 35% 35%,#3a3a5a,#111);
-  box-shadow: inset 0 0 4px rgba(0,0,0,0.8), 0 0 3px rgba(0,243,255,0.25);
-}
-
-/* Status bar */
-.status {
-  padding: 48px 22px 8px;
-  display:flex; justify-content:space-between; align-items:center;
-  flex-shrink:0;
+html,body{
+  width:100%;height:100%;overflow:hidden;
+  background:transparent;
   font-family:'Rajdhani',sans-serif;
-  font-size:13px; font-weight:600; color:#fff;
+  display:flex;justify-content:center;align-items:center;
+  min-height:100vh;min-height:100dvh;
 }
 
-.live-pill {
-  display:inline-flex; align-items:center; gap:5px;
-  padding:4px 12px;
-  background:rgba(255,0,110,0.12);
-  border:1px solid var(--nm);
-  border-radius:16px;
-  font-size:10px; font-weight:700; color:var(--nm);
-  letter-spacing:1.5px;
-  box-shadow:0 0 14px rgba(255,0,110,0.35);
+.shell{
+  display:flex;justify-content:center;align-items:center;
+  width:100vw;height:100dvh;height:100vh;
+  padding:12px;background:transparent;
 }
-.live-dot {
-  width:6px; height:6px; border-radius:50%;
-  background:var(--nm); box-shadow:0 0 7px var(--nm);
+
+/* ── Phone ── */
+.phone{
+  position:relative;
+  width:min(360px,100%);
+  height:min(740px,calc(100dvh - 24px));
+  height:min(740px,calc(100vh - 24px));
+  background:linear-gradient(160deg,#141428,#0a0a18);
+  border-radius:40px;
+  box-shadow:
+    0 0 0 1.5px rgba(178,75,243,.5),
+    0 0 0 3px rgba(0,243,255,.15),
+    0 30px 80px rgba(0,0,0,.85),
+    0 0 60px rgba(0,243,255,.12);
+  overflow:hidden;
+  display:flex;flex-direction:column;
+}
+.phone::before{
+  content:'';position:absolute;inset:0;border-radius:40px;
+  background:linear-gradient(135deg,rgba(255,255,255,.06) 0%,transparent 55%,rgba(255,255,255,.02) 100%);
+  pointer-events:none;z-index:5;
+}
+
+/* ── Dynamic island ── */
+.island{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:100px;height:28px;background:#000;border-radius:14px;z-index:10;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.05);
+}
+.cam{
+  width:10px;height:10px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#3a3a5a,#111);
+  box-shadow:inset 0 0 4px rgba(0,0,0,.8),0 0 3px rgba(0,243,255,.25);
+}
+
+/* ── Status bar ── */
+.status{
+  padding:48px 22px 8px;
+  display:flex;justify-content:space-between;align-items:center;
+  flex-shrink:0;font-size:13px;font-weight:600;color:#fff;
+}
+#clock{font-family:'Orbitron',monospace;font-size:12px;}
+
+.live-pill{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 12px;
+  background:rgba(255,0,110,.12);
+  border:1px solid var(--nm);border-radius:16px;
+  font-size:10px;font-weight:700;color:var(--nm);letter-spacing:1.5px;
+  box-shadow:0 0 14px rgba(255,0,110,.35);
+}
+.live-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--nm);box-shadow:0 0 7px var(--nm);
   animation:pulse 2s infinite;
 }
-@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(1.4)} }
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.4)}}
 
-/* Scroll area */
-.scroll {
-  flex:1;
-  overflow-y:auto; overflow-x:hidden;
-  padding: 8px 18px 12px;
-  display:flex; flex-direction:column; gap:14px;
+/* ── Scroll area ── */
+.scroll{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  padding:8px 18px 12px;
+  display:flex;flex-direction:column;gap:14px;
   scrollbar-width:none;
 }
-.scroll::-webkit-scrollbar { display:none; }
+.scroll::-webkit-scrollbar{display:none;}
 
-/* Cover */
-.cover-wrap {
+/* ── Cover ── */
+.cover-wrap{
   position:relative;
-  width:min(200px, 55%);
+  width:min(200px,55%);
   aspect-ratio:1;
-  margin:0 auto;
-  flex-shrink:0;
+  margin:0 auto;flex-shrink:0;
 }
-.cover-glow {
-  position:absolute; inset:-12px;
+.cover-glow{
+  position:absolute;inset:-12px;
   background:conic-gradient(from 0deg,var(--nc),var(--np),var(--nm),var(--nc));
   border-radius:50%;
   animation:spin 7s linear infinite;
-  filter:blur(20px); opacity:0.6;
+  filter:blur(20px);opacity:.6;
 }
-@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-.cover-art {
-  position:relative; width:100%; height:100%;
-  border-radius:50%; overflow:hidden;
-  box-shadow:0 0 30px rgba(0,243,255,0.25),inset 0 0 0 2px rgba(255,255,255,0.08);
-  animation:float 6s ease-in-out infinite;
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.cover-art{
+  position:relative;width:100%;height:100%;
+  border-radius:50%;overflow:hidden;
+  box-shadow:0 0 30px rgba(0,243,255,.25),inset 0 0 0 2px rgba(255,255,255,.08);
+  animation:floatA 6s ease-in-out infinite;
 }
-.cover-art.spinning { animation:spinaround 20s linear infinite; }
-@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
-@keyframes spinaround { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-.cover-art img { width:100%; height:100%; object-fit:cover; }
+.cover-art.spinning{animation:spinaround 20s linear infinite;}
+@keyframes floatA{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes spinaround{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.cover-art img{width:100%;height:100%;object-fit:cover;display:block;}
 
-/* Track info */
-.info { text-align:center; }
-.rname {
+/* ── Track info ── */
+.info{text-align:center;}
+.rname{
   font-family:'Orbitron',monospace;
-  font-size:clamp(14px,4vw,19px); font-weight:900;
+  font-size:clamp(14px,4vw,19px);font-weight:900;
   background:linear-gradient(135deg,var(--nc),var(--np),var(--nm));
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
   background-clip:text;
-  letter-spacing:2px; margin-bottom:5px;
+  letter-spacing:2px;margin-bottom:5px;
 }
-.stitle { font-size:13px; font-weight:600; color:var(--nc); min-height:18px;
-  text-shadow:0 0 8px rgba(0,243,255,0.5); }
-.aname { font-size:11px; color:rgba(160,160,192,0.8); min-height:16px; }
+.stitle{font-size:13px;font-weight:600;color:var(--nc);min-height:18px;text-shadow:0 0 8px rgba(0,243,255,.5);}
+.aname{font-size:11px;color:rgba(160,160,192,.8);min-height:16px;}
 
-/* Visualizer */
-.viz {
-  display:flex; justify-content:center; align-items:flex-end;
-  gap:2px; height:48px; padding:0 8px;
+/* ── Visualizer ── */
+.viz{
+  display:flex;justify-content:center;align-items:flex-end;
+  gap:2px;height:48px;padding:0 8px;
 }
-.vbar {
-  flex:1; max-width:6px;
+.vbar{
+  flex:1;max-width:6px;
   background:linear-gradient(to top,var(--nc),var(--np),var(--nm));
-  border-radius:3px;
-  box-shadow:0 0 6px var(--nc);
-  transition:height 0.1s ease-out;
+  border-radius:3px;box-shadow:0 0 6px var(--nc);
+  transition:height .1s ease-out;
 }
 
-/* Controls */
-.controls {
-  display:flex; justify-content:center; align-items:center; gap:20px;
+/* ── Controls ── */
+.controls{display:flex;justify-content:center;align-items:center;gap:20px;}
+.cbtn{
+  width:46px;height:46px;border:none;cursor:pointer;
+  background:var(--glass);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(0,243,255,.2);color:#fff;
+  transition:all .25s;
 }
-.cbtn {
-  width:46px; height:46px; border:none; cursor:pointer;
-  background:var(--glass); backdrop-filter:blur(8px);
-  border-radius:50%; display:flex; align-items:center; justify-content:center;
-  border:1px solid rgba(0,243,255,0.2); color:#fff;
-  transition:all 0.25s;
-}
-.cbtn:hover { background:rgba(0,243,255,0.1); border-color:var(--nc);
-  box-shadow:0 0 18px rgba(0,243,255,0.3); transform:scale(1.08); }
-.cbtn:active { transform:scale(0.93); }
-.playbtn {
-  width:64px; height:64px;
+.cbtn:hover{background:rgba(0,243,255,.1);border-color:var(--nc);box-shadow:0 0 18px rgba(0,243,255,.3);transform:scale(1.08);}
+.cbtn:active{transform:scale(.93);}
+.playbtn{
+  width:64px;height:64px;
   background:linear-gradient(135deg,var(--nc),var(--np));
-  border:2px solid rgba(255,255,255,0.2);
-  box-shadow:0 8px 32px rgba(0,243,255,0.4);
+  border:2px solid rgba(255,255,255,.2);
+  box-shadow:0 8px 32px rgba(0,243,255,.4);
 }
-.playbtn:hover { transform:scale(1.1); box-shadow:0 8px 44px rgba(0,243,255,0.6); }
-.playbtn.on {
+.playbtn:hover{transform:scale(1.1);box-shadow:0 8px 44px rgba(0,243,255,.6);}
+.playbtn.on{
   background:linear-gradient(135deg,var(--np),var(--nm));
   animation:breathe 2s ease-in-out infinite;
 }
-@keyframes breathe {
-  0%,100%{box-shadow:0 8px 32px rgba(178,75,243,0.4)}
-  50%{box-shadow:0 8px 52px rgba(255,0,110,0.6),0 0 25px rgba(255,0,110,0.3)}
+@keyframes breathe{
+  0%,100%{box-shadow:0 8px 32px rgba(178,75,243,.4)}
+  50%{box-shadow:0 8px 52px rgba(255,0,110,.6),0 0 25px rgba(255,0,110,.3)}
 }
 
-/* Volume */
-.vol {
-  display:flex; align-items:center; gap:10px; padding:0 4px;
+/* ── Volume ── */
+.vol{display:flex;align-items:center;gap:10px;padding:0 4px;}
+.vol-icon{color:var(--nc);filter:drop-shadow(0 0 4px var(--nc));flex-shrink:0;}
+.vol-track{
+  flex:1;height:5px;background:rgba(255,255,255,.07);
+  border-radius:3px;position:relative;cursor:pointer;
+  border:1px solid rgba(0,243,255,.1);
+  -webkit-tap-highlight-color:transparent;
 }
-.vol-icon { color:var(--nc); filter:drop-shadow(0 0 4px var(--nc)); flex-shrink:0; }
-.vol-track {
-  flex:1; height:5px; background:rgba(255,255,255,0.07);
-  border-radius:3px; position:relative; cursor:pointer;
-  border:1px solid rgba(0,243,255,0.1);
-}
-.vol-fill {
-  height:100%; border-radius:3px;
+.vol-fill{
+  height:100%;border-radius:3px;
   background:linear-gradient(90deg,var(--nc),var(--np));
-  box-shadow:0 0 8px var(--nc); transition:width 0.1s;
+  box-shadow:0 0 8px var(--nc);transition:width .1s;
+  width:70%;
 }
-.vol-thumb {
-  position:absolute; top:50%;
-  width:12px; height:12px;
-  background:var(--nc); border-radius:50%;
+.vol-thumb{
+  position:absolute;top:50%;
+  width:12px;height:12px;
+  background:var(--nc);border-radius:50%;
   box-shadow:0 0 10px var(--nc),0 0 3px #fff;
-  transform:translate(-50%,-50%); transition:left 0.1s;
+  transform:translate(-50%,-50%);transition:left .1s;
+  left:70%;
 }
-.vol-val { font-size:10px; color:rgba(160,160,192,0.8); min-width:24px; text-align:right; }
+.vol-val{font-size:10px;color:rgba(160,160,192,.8);min-width:24px;text-align:right;}
 
-/* EQ */
-.eq {
-  background:var(--glass); backdrop-filter:blur(10px);
-  border-radius:13px; padding:12px 14px;
-  border:1px solid rgba(0,243,255,0.18);
+/* ── EQ ── */
+.eq{
+  background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-radius:13px;padding:12px 14px;
+  border:1px solid rgba(0,243,255,.18);
 }
-.eq-title {
-  font-size:10px; font-weight:700; color:var(--nc);
-  letter-spacing:2px; text-transform:uppercase;
-  margin-bottom:10px; display:flex; align-items:center; gap:6px;
-  text-shadow:0 0 6px rgba(0,243,255,0.5);
+.eq-title{
   font-family:'Orbitron',monospace;
+  font-size:10px;font-weight:700;color:var(--nc);
+  letter-spacing:2px;text-transform:uppercase;
+  margin-bottom:10px;display:flex;align-items:center;gap:6px;
+  text-shadow:0 0 6px rgba(0,243,255,.5);
 }
-.eq-bars {
-  display:flex; justify-content:space-around;
-  align-items:flex-end; height:36px; gap:4px;
-}
-.ebar {
-  flex:1; border-radius:2px;
+.eq-bars{display:flex;justify-content:space-around;align-items:flex-end;height:36px;gap:4px;}
+.ebar{
+  flex:1;border-radius:2px;
   background:linear-gradient(to top,var(--nc),var(--nm));
-  box-shadow:0 0 6px rgba(0,243,255,0.5);
-  transition:height 0.15s ease-out;
+  box-shadow:0 0 6px rgba(0,243,255,.5);
+  transition:height .15s ease-out;
 }
 
-/* Extra btns */
-.extras {
-  display:flex; justify-content:space-around;
+/* ── Extra buttons ── */
+.extras{display:flex;justify-content:space-around;}
+.xbtn{
+  width:38px;height:38px;border:none;cursor:pointer;
+  background:var(--glass);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  border-radius:11px;display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(178,75,243,.2);color:#fff;
+  transition:all .25s;
 }
-.xbtn {
-  width:38px; height:38px; border:none; cursor:pointer;
-  background:var(--glass); backdrop-filter:blur(8px);
-  border-radius:11px; display:flex; align-items:center; justify-content:center;
-  border:1px solid rgba(178,75,243,0.2); color:#fff;
-  transition:all 0.25s;
-}
-.xbtn:hover {
-  background:rgba(178,75,243,0.12); border-color:var(--np);
-  box-shadow:0 0 14px rgba(178,75,243,0.35); color:var(--np);
-}
-.xbtn:active { transform:scale(0.88); }
+.xbtn:hover{background:rgba(178,75,243,.12);border-color:var(--np);box-shadow:0 0 14px rgba(178,75,243,.35);color:var(--np);}
+.xbtn:active{transform:scale(.88);}
 
-/* Progress */
-.prog-wrap { padding:0 2px; }
-.prog-bar {
-  position:relative; height:26px;
-  background:rgba(0,0,0,0.35);
-  border-radius:13px; overflow:hidden;
-  border:1px solid rgba(0,243,255,0.18);
-  display:flex; align-items:center; justify-content:center; gap:1px; padding:0 4px;
+/* ── Progress / waveform ── */
+.prog-wrap{padding:0 2px;}
+.prog-bar{
+  position:relative;height:26px;
+  background:rgba(0,0,0,.35);
+  border-radius:13px;overflow:hidden;
+  border:1px solid rgba(0,243,255,.18);
+  display:flex;align-items:center;justify-content:center;gap:1px;padding:0 4px;
 }
-.prog-shine {
-  position:absolute; inset:0;
-  background:linear-gradient(90deg,transparent,rgba(0,243,255,0.09),transparent);
+.prog-shine{
+  position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(0,243,255,.09),transparent);
   animation:shine 3s infinite;
 }
-@keyframes shine { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
-.wseg {
-  width:2px; flex-shrink:0;
+@keyframes shine{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.wseg{
+  width:2px;flex-shrink:0;
   background:linear-gradient(to top,var(--nc),var(--np));
-  border-radius:1px; box-shadow:0 0 3px var(--nc);
+  border-radius:1px;box-shadow:0 0 3px var(--nc);
   animation:wave 1.5s ease-in-out infinite;
 }
-@keyframes wave { 0%,100%{opacity:0.35;transform:scaleY(0.55)} 50%{opacity:1;transform:scaleY(1)} }
-.prog-lbl {
-  display:flex; justify-content:space-between;
-  margin-top:4px; font-size:9px;
-  color:rgba(160,160,192,0.7); letter-spacing:1px;
-  font-weight:700; padding:0 4px;
+@keyframes wave{0%,100%{opacity:.35;transform:scaleY(.55)}50%{opacity:1;transform:scaleY(1)}}
+.prog-lbl{
+  display:flex;justify-content:space-between;
+  margin-top:4px;font-size:9px;
+  color:rgba(160,160,192,.7);letter-spacing:1px;
+  font-weight:700;padding:0 4px;
 }
-.prog-lbl span:first-child { color:var(--nm); text-shadow:0 0 4px var(--nm); }
+.prog-lbl span:first-child{color:var(--nm);text-shadow:0 0 4px var(--nm);}
 
-/* Footer */
-.footer {
-  text-align:center; padding:8px 16px 10px;
-  font-size:9px; color:rgba(160,160,192,0.6);
-  border-top:1px solid rgba(255,255,255,0.05);
-  background:rgba(0,0,0,0.25); letter-spacing:1px;
+/* ── Footer ── */
+.footer{
+  text-align:center;padding:8px 16px 10px;
+  font-size:9px;color:rgba(160,160,192,.6);
+  border-top:1px solid rgba(255,255,255,.05);
+  background:rgba(0,0,0,.25);letter-spacing:1px;
   flex-shrink:0;
 }
-.footer span { color:var(--nc); font-weight:700; text-shadow:0 0 4px var(--nc); }
-`;
+.footer span{color:var(--nc);font-weight:700;text-shadow:0 0 4px var(--nc);}
 
-export default function MelomanoRadio() {
-  const audioRef = useRef(null);
-  const ctxRef = useRef(null);
-  const analyserRef = useRef(null);
-  const sourceRef = useRef(null);
-  const dataRef = useRef(null);
-  const rafRef = useRef(null);
+/* ── Play icon toggle ── */
+.icon-play{display:block;}
+.icon-pause{display:none;}
+.playbtn.on .icon-play{display:none;}
+.playbtn.on .icon-pause{display:block;}
+</style>
+</head>
+<body>
 
-  const [playing, setPlaying] = useState(false);
-  const [vol, setVol] = useState(0.7);
-  const [status, setStatus] = useState("Connecting...");
-  const [title, setTitle] = useState("Live Stream");
-  const [vizBars, setVizBars] = useState(new Array(28).fill(10));
-  const [eqBars, setEqBars] = useState(new Array(8).fill(12));
-  const [time, setTime] = useState(() => {
-    const d = new Date();
-    return d.getHours().toString().padStart(2,"0") + ":" + d.getMinutes().toString().padStart(2,"0");
-  });
+<div class="shell">
+  <div class="phone">
+    <div class="island"><div class="cam"></div></div>
 
-  useEffect(() => {
-    const t = setInterval(() => {
-      const d = new Date();
-      setTime(d.getHours().toString().padStart(2,"0") + ":" + d.getMinutes().toString().padStart(2,"0"));
-    }, 1000);
-    return () => clearInterval(t);
-  }, []);
+    <!-- Status bar -->
+    <div class="status">
+      <span id="clock">00:00</span>
+      <div class="live-pill">
+        <div class="live-dot"></div>LIVE
+      </div>
+    </div>
 
-  const initAudio = useCallback(() => {
-    if (ctxRef.current || !audioRef.current) return;
-    const AC = window.AudioContext || window.webkitAudioContext;
-    ctxRef.current = new AC();
-    analyserRef.current = ctxRef.current.createAnalyser();
-    sourceRef.current = ctxRef.current.createMediaElementSource(audioRef.current);
-    sourceRef.current.connect(analyserRef.current);
-    analyserRef.current.connect(ctxRef.current.destination);
-    analyserRef.current.fftSize = 128;
-    dataRef.current = new Uint8Array(analyserRef.current.frequencyBinCount);
-  }, []);
+    <!-- Scrollable content -->
+    <div class="scroll">
 
-  const animate = useCallback(() => {
-    const draw = () => {
-      if (analyserRef.current && dataRef.current && playing) {
-        analyserRef.current.getByteFrequencyData(dataRef.current);
-        setVizBars(prev => prev.map((_, i) => Math.max(4, (dataRef.current[i] || 0) / 255 * 50)));
-        setEqBars(prev => prev.map((_, i) => Math.max(4, (dataRef.current[i * 4] || 0) / 255 * 34)));
-      } else {
-        const t = Date.now();
-        setVizBars(prev => prev.map((_, i) => Math.sin(t * 0.002 + i * 0.5) * 9 + 13));
-        setEqBars(prev => prev.map((_, i) => Math.sin(t * 0.003 + i * 0.7) * 7 + 11));
-      }
-      rafRef.current = requestAnimationFrame(draw);
-    };
-    rafRef.current && cancelAnimationFrame(rafRef.current);
-    draw();
-  }, [playing]);
-
-  useEffect(() => {
-    animate();
-    return () => rafRef.current && cancelAnimationFrame(rafRef.current);
-  }, [animate]);
-
-  const togglePlay = async () => {
-    if (!audioRef.current) return;
-    initAudio();
-    if (ctxRef.current?.state === "suspended") await ctxRef.current.resume();
-    if (playing) {
-      audioRef.current.pause();
-      setPlaying(false);
-    } else {
-      try {
-        await audioRef.current.play();
-        setPlaying(true);
-      } catch (e) {
-        setStatus("Error: Stream unavailable");
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (audioRef.current) audioRef.current.volume = vol;
-  }, [vol]);
-
-  const handleVol = e => {
-    const r = e.currentTarget.getBoundingClientRect();
-    setVol(Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)));
-  };
-
-  const waves = Array.from({ length: 52 }, (_, i) => ({
-    h: Math.abs(Math.sin(i * 0.3)) * 13 + 3,
-    delay: i * 0.045
-  }));
-
-  return (
-    <>
-      <style>{css}</style>
-      <div className="shell">
-        <div className="phone">
-          <div className="island"><div className="cam" /></div>
-
-          {/* Status Bar */}
-          <div className="status">
-            <span style={{fontFamily:"'Orbitron',monospace",fontSize:12}}>{time}</span>
-            <div className="live-pill">
-              <div className="live-dot" />LIVE
-            </div>
-          </div>
-
-          {/* Scrollable content */}
-          <div className="scroll">
-
-            {/* Cover */}
-            <div className="cover-wrap">
-              <div className="cover-glow" />
-              <div className={`cover-art ${playing ? "spinning" : ""}`}>
-                <img
-                  src="https://raw.githubusercontent.com/conectadosturadio/MELOMANOFOTOPERFIL/main/Gemini_Generated_Image_i56heri56heri56h.png"
-                  alt="MELÓMANO RADIO"
-                />
-              </div>
-            </div>
-
-            {/* Info */}
-            <div className="info">
-              <div className="rname">MELÓMANO RADIO</div>
-              <div className="stitle">{status}</div>
-              <div className="aname">{title}</div>
-            </div>
-
-            {/* Visualizer */}
-            <div className="viz">
-              {vizBars.map((h, i) => (
-                <div key={i} className="vbar" style={{ height: h + "px" }} />
-              ))}
-            </div>
-
-            {/* Controls */}
-            <div className="controls">
-              <button className="cbtn" title="Previous">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M6 6h2v12H6zm3.5 6 8.5 6V6z" />
-                </svg>
-              </button>
-              <button className={`cbtn playbtn ${playing ? "on" : ""}`} onClick={togglePlay} title={playing ? "Pause" : "Play"}>
-                {playing
-                  ? <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zm8 0h4v14h-4z" /></svg>
-                  : <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
-                }
-              </button>
-              <button className="cbtn" title="Next">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
-                </svg>
-              </button>
-            </div>
-
-            {/* Volume */}
-            <div className="vol">
-              <svg className="vol-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
-              </svg>
-              <div className="vol-track" onClick={handleVol}>
-                <div className="vol-fill" style={{ width: vol * 100 + "%" }} />
-                <div className="vol-thumb" style={{ left: vol * 100 + "%" }} />
-              </div>
-              <span className="vol-val">{Math.round(vol * 100)}</span>
-            </div>
-
-            {/* EQ */}
-            <div className="eq">
-              <div className="eq-title">🎛 Spectrum Analyzer</div>
-              <div className="eq-bars">
-                {eqBars.map((h, i) => <div key={i} className="ebar" style={{ height: h + "px" }} />)}
-              </div>
-            </div>
-
-            {/* Extra controls */}
-            <div className="extras">
-              {[
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z" /></svg>,
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z" /></svg>,
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11 20v-7h2v7h-2zm-4-12v12H5V8h2zm8 5v7h-2v-7h2z" /></svg>,
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
-              ].map((icon, i) => (
-                <button key={i} className="xbtn">{icon}</button>
-              ))}
-            </div>
-
-            {/* Progress / waveform */}
-            <div className="prog-wrap">
-              <div className="prog-bar">
-                <div className="prog-shine" />
-                {waves.map((w, i) => (
-                  <div key={i} className="wseg" style={{ height: w.h + "px", animationDelay: w.delay + "s" }} />
-                ))}
-              </div>
-              <div className="prog-lbl">
-                <span>LIVE</span>
-                <span>∞</span>
-              </div>
-            </div>
-
-          </div>{/* /scroll */}
-
-          {/* Footer */}
-          <div className="footer">
-            Created By: <span>@virtualgraphic.pa</span>
-          </div>
+      <!-- Cover -->
+      <div class="cover-wrap">
+        <div class="cover-glow"></div>
+        <div class="cover-art" id="coverArt">
+          <img src="https://raw.githubusercontent.com/conectadosturadio/MELOMANOFOTOPERFIL/main/Gemini_Generated_Image_i56heri56heri56h.png" alt="MELÓMANO RADIO"/>
         </div>
       </div>
 
-      <audio ref={audioRef} crossOrigin="anonymous"
-        onPlaying={() => { setStatus("Live Stream Active"); setTitle("MELÓMANO RADIO"); }}
-        onError={() => { setStatus("Stream Error"); setTitle("Please try again"); }}>
-        <source src="https://stream.zeno.fm/g0gymeeh6tsuv" type="audio/mpeg" />
-      </audio>
-    </>
-  );
+      <!-- Info -->
+      <div class="info">
+        <div class="rname">MELÓMANO RADIO</div>
+        <div class="stitle" id="statusTxt">Connecting...</div>
+        <div class="aname" id="titleTxt">Live Stream</div>
+      </div>
+
+      <!-- Visualizer (28 bars) -->
+      <div class="viz" id="vizEl"></div>
+
+      <!-- Controls -->
+      <div class="controls">
+        <button class="cbtn" title="Previous">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/>
+          </svg>
+        </button>
+        <button class="cbtn playbtn" id="playBtn" title="Play">
+          <svg class="icon-play" width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+          <svg class="icon-pause" width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6 5h4v14H6zm8 0h4v14h-4z"/>
+          </svg>
+        </button>
+        <button class="cbtn" title="Next">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Volume -->
+      <div class="vol">
+        <svg class="vol-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+        </svg>
+        <div class="vol-track" id="volTrack">
+          <div class="vol-fill" id="volFill"></div>
+          <div class="vol-thumb" id="volThumb"></div>
+        </div>
+        <span class="vol-val" id="volVal">70</span>
+      </div>
+
+      <!-- EQ (8 bars) -->
+      <div class="eq">
+        <div class="eq-title">🎛 Spectrum Analyzer</div>
+        <div class="eq-bars" id="eqEl"></div>
+      </div>
+
+      <!-- Extra buttons -->
+      <div class="extras">
+        <button class="xbtn" title="Shuffle">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/>
+          </svg>
+        </button>
+        <button class="xbtn" title="Repeat">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>
+          </svg>
+        </button>
+        <button class="xbtn" title="Equalizer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M11 20v-7h2v7h-2zm-4-12v12H5V8h2zm8 5v7h-2v-7h2z"/>
+          </svg>
+        </button>
+        <button class="xbtn" title="Favorite">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Progress / waveform -->
+      <div class="prog-wrap">
+        <div class="prog-bar" id="progBar">
+          <div class="prog-shine"></div>
+          <!-- wave segments injected by JS -->
+        </div>
+        <div class="prog-lbl">
+          <span>LIVE</span>
+          <span>∞</span>
+        </div>
+      </div>
+
+    </div><!-- /scroll -->
+
+    <!-- Footer -->
+    <div class="footer">
+      Created By: <span>@virtualgraphic.pa</span>
+    </div>
+  </div>
+</div>
+
+<!-- Audio -->
+<audio id="audio" crossorigin="anonymous">
+  <source src="https://stream.zeno.fm/g0gymeeh6tsuv" type="audio/mpeg"/>
+</audio>
+
+<script>
+/* ─────────── DOM refs ─────────── */
+const audio     = document.getElementById('audio');
+const playBtn   = document.getElementById('playBtn');
+const coverArt  = document.getElementById('coverArt');
+const statusTxt = document.getElementById('statusTxt');
+const titleTxt  = document.getElementById('titleTxt');
+const vizEl     = document.getElementById('vizEl');
+const eqEl      = document.getElementById('eqEl');
+const volTrack  = document.getElementById('volTrack');
+const volFill   = document.getElementById('volFill');
+const volThumb  = document.getElementById('volThumb');
+const volVal    = document.getElementById('volVal');
+const progBar   = document.getElementById('progBar');
+const clock     = document.getElementById('clock');
+
+/* ─────────── State ─────────── */
+let playing = false;
+let volume  = 0.7;
+let audioCtx, analyser, sourceNode, dataArray;
+let rafId;
+
+/* ─────────── Build visualizer bars ─────────── */
+const VIZ_COUNT = 28;
+const EQ_COUNT  = 8;
+const vizBars   = [];
+const eqBars    = [];
+
+for (let i = 0; i < VIZ_COUNT; i++) {
+  const d = document.createElement('div');
+  d.className = 'vbar'; d.style.height = '10px';
+  vizEl.appendChild(d); vizBars.push(d);
 }
+for (let i = 0; i < EQ_COUNT; i++) {
+  const d = document.createElement('div');
+  d.className = 'ebar'; d.style.height = '12px';
+  eqEl.appendChild(d); eqBars.push(d);
+}
+
+/* ─────────── Build waveform segments ─────────── */
+for (let i = 0; i < 52; i++) {
+  const h = Math.abs(Math.sin(i * 0.3)) * 13 + 3;
+  const d = document.createElement('div');
+  d.className = 'wseg';
+  d.style.height = h + 'px';
+  d.style.animationDelay = (i * 0.045) + 's';
+  progBar.appendChild(d);
+}
+
+/* ─────────── Clock ─────────── */
+function updateClock() {
+  const d = new Date();
+  clock.textContent =
+    d.getHours().toString().padStart(2,'0') + ':' +
+    d.getMinutes().toString().padStart(2,'0');
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+/* ─────────── Web Audio init ─────────── */
+function initAudio() {
+  if (audioCtx) return;
+  const AC = window.AudioContext || window.webkitAudioContext;
+  audioCtx  = new AC();
+  analyser  = audioCtx.createAnalyser();
+  analyser.fftSize = 128;
+  dataArray = new Uint8Array(analyser.frequencyBinCount);
+  sourceNode = audioCtx.createMediaElementSource(audio);
+  sourceNode.connect(analyser);
+  analyser.connect(audioCtx.destination);
+}
+
+/* ─────────── Animation loop ─────────── */
+function animate() {
+  if (analyser && dataArray && playing) {
+    analyser.getByteFrequencyData(dataArray);
+    vizBars.forEach((b, i) => {
+      b.style.height = Math.max(4, (dataArray[i] || 0) / 255 * 50) + 'px';
+    });
+    eqBars.forEach((b, i) => {
+      b.style.height = Math.max(4, (dataArray[i * 4] || 0) / 255 * 34) + 'px';
+    });
+  } else {
+    const t = Date.now();
+    vizBars.forEach((b, i) => {
+      b.style.height = (Math.sin(t * 0.002 + i * 0.5) * 9 + 13) + 'px';
+    });
+    eqBars.forEach((b, i) => {
+      b.style.height = (Math.sin(t * 0.003 + i * 0.7) * 7 + 11) + 'px';
+    });
+  }
+  rafId = requestAnimationFrame(animate);
+}
+animate();
+
+/* ─────────── Play / Pause ─────────── */
+playBtn.addEventListener('click', async () => {
+  initAudio();
+  if (audioCtx.state === 'suspended') await audioCtx.resume();
+
+  if (playing) {
+    audio.pause();
+    setPlaying(false);
+  } else {
+    try {
+      await audio.play();
+      setPlaying(true);
+    } catch(e) {
+      statusTxt.textContent = 'Error: Stream unavailable';
+    }
+  }
+});
+
+function setPlaying(val) {
+  playing = val;
+  playBtn.classList.toggle('on', val);
+  coverArt.classList.toggle('spinning', val);
+}
+
+audio.addEventListener('playing', () => {
+  statusTxt.textContent = 'Live Stream Active';
+  titleTxt.textContent  = 'MELÓMANO RADIO';
+});
+audio.addEventListener('error', () => {
+  statusTxt.textContent = 'Stream Error';
+  titleTxt.textContent  = 'Please try again';
+  setPlaying(false);
+});
+audio.addEventListener('pause',  () => setPlaying(false));
+
+/* ─────────── Volume ─────────── */
+function setVolume(v) {
+  volume = Math.max(0, Math.min(1, v));
+  audio.volume = volume;
+  const pct = (volume * 100).toFixed(0);
+  volFill.style.width  = pct + '%';
+  volThumb.style.left  = pct + '%';
+  volVal.textContent   = pct;
+}
+setVolume(0.7);
+
+function handleVolClick(e) {
+  const r = volTrack.getBoundingClientRect();
+  const x = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+  setVolume(x / r.width);
+}
+
+volTrack.addEventListener('click',     handleVolClick);
+volTrack.addEventListener('touchmove', e => { e.preventDefault(); handleVolClick(e); }, {passive:false});
+
+let dragging = false;
+volTrack.addEventListener('mousedown',  () => dragging = true);
+document.addEventListener('mousemove',  e => { if (dragging) handleVolClick(e); });
+document.addEventListener('mouseup',    () => dragging = false);
+</script>
+</body>
+</html>
